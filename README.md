@@ -4,38 +4,34 @@
 ```
 https://certlogik.com/decoder/
 https://stackoverflow.com/questions/43665243/invalid-self-signed-ssl-cert-subject-alternative-name-missing
-https://devopscube.com/create-self-signed-certificates-openssl/
 https://stackoverflow.com/questions/6194236/openssl-certificate-version-3-with-subject-alternative-name
 https://serverfault.com/questions/845766/generating-a-self-signed-cert-with-openssl-that-works-in-chrome-58
 Free SSL Certs: https://www.cminds.com/blog/wordpress/5-best-free-ssl-certificates-secure-site/
-
 ```
 
 ## Creating a Self-Signed Certificate
 A self-signed certificate is a certificate that's signed with its own private key. 
 It can be used to encrypt data just as well as CA-signed certificates, but our users will be shown a warning that says the certificate isn't trusted.
 
-You can create self-signed certificates using OpenSSL commands
+You can create self-signed certificates using **OpenSSL**
 
-Openssl is a handy utility to create self-signed certificates. You can use OpenSSL on all the operating systems such as Windows, MAC, and Linux flavors.
-
-The Rivest-Shamir-Adleman (RSA) encryption algorithm is an asymmetric encryption algorithm
+**OpenSSL** is a handy utility to create self-signed certificates. You can use OpenSSL on all the operating systems such as Windows, MAC, and Linux flavors.
 ```
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout domain.key -out domain.crt
-
--nodes (short for "no DES") if you don't want to protect your private key with a passphrase. Otherwise it will prompt you for "at least a 4 character" password.
 ```
+Here, **Rivest-Shamir-Adleman (RSA)** is an asymmetric encryption algorithm and **-nodes** (short for "no DES") is used if you don't want to protect your private key with a passphrase. Otherwise it will prompt you for "at least a 4 character" password.
+
 Decode Certificate
 ```
 openssl x509 -in domain.crt -text -noout
 ```
 
 ## Create Certificate Authority
-Let's create a private key (rootCA.key) and a self-signed root CA certificate (rootCA.crt) from the command line:
+Let's create a private key (rootCA.key) and a self-signed root CA certificate (rootCA.crt). This will act like our private CA
 ```
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt
 ```
-or
+or you can directly provide the CSR details like Country,State, Common Name etc in the command
 ```
 openssl req -x509 \
             -sha256 \
@@ -55,8 +51,8 @@ Create the Server Private Key
 ```
 openssl genrsa -out domain.key 2048
 ```
-Now we have a key, we need a certificate signing request (CSR).
-Lets start with a csr.conf(CSR Configuration) with the below contents
+Now, we have a key, we need a certificate signing request (CSR).
+Lets start with a `csr.conf`(CSR Configuration) with the below contents
 ```
 cat > csr.conf <<EOF
 [ req ]
