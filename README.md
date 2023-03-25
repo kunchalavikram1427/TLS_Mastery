@@ -1,13 +1,11 @@
 # SSL/TLS 
 
-## Links
-```
-https://certlogik.com/decoder/
-https://stackoverflow.com/questions/43665243/invalid-self-signed-ssl-cert-subject-alternative-name-missing
-https://stackoverflow.com/questions/6194236/openssl-certificate-version-3-with-subject-alternative-name
-https://serverfault.com/questions/845766/generating-a-self-signed-cert-with-openssl-that-works-in-chrome-58
-Free SSL Certs: https://www.cminds.com/blog/wordpress/5-best-free-ssl-certificates-secure-site/
-```
+### TLS
+Transport Layer Security(TLS) is a protocol that establishes an encrypted session between two computers/applications on the Internet, typically between a web browser and a webserver.  It is updated version to SSL.  It ensures that eavesdroppers and hackers are unable to see what you transmit which is particularly useful for private and sensitive information such as passwords, credit card numbers, and personal information. TLS encryption is used in HTTPS connections, which are secured using SSL/TLS certificates. Thus, HTTPS connections ensure that no one can snoop on your internet traffic while browsing the web or emailing your friends or family members.
+
+### SSL/TLS Certificate
+An SSL certificate is a type of digital certificate that provides authentication for a website and enables an encrypted connection. 
+When a website holds an SSL certificate, a padlock icon appears on the left side of the URL address bar signifying that the connection is secure. Additionally, sites will display an HTTPS address instead of an HTTP address. 
 
 ## Creating a Self-Signed Certificate
 A self-signed certificate is a certificate that's signed with its own private key. 
@@ -136,16 +134,10 @@ openssl x509 -in domain.crt -text -noout
 ```
 
 ## Install and configure Nginx
+Install Nginx on AWS EC2 running Linux AMI
 ```
 yum install nginx -y
 systemctl enable --now nginx
-```
-Configure Nginx with the certificate and key
-```
-mkdir -p /etc/pki/nginx/private
-cp domain.crt /etc/pki/nginx/server.crt
-cp domain.key /etc/pki/nginx/private/server.key
-systemctl restart nginx
 ```
 Enable SSL by editing the configuration `/etc/nginx/nginx.conf` to listen on 443
 ```
@@ -164,35 +156,49 @@ location / {
 root   /home/www/public_html/your.domain.com/public/;
 index  index.html;
 }
-
 }
-
+```
+Configure Nginx with the certificate and key we created
+```
+mkdir -p /etc/pki/nginx/private
+cp domain.crt /etc/pki/nginx/server.crt
+cp domain.key /etc/pki/nginx/private/server.key
+systemctl restart nginx
 ```
 
 ## Adding CA in browser
 ```
-https://docs.vmware.com/en/VMware-Adapter-for-SAP-Landscape-Management/2.1.0/Installation-and-Administration-Guide-for-VLA-Administrators/GUID-D60F08AD-6E54-4959-A272-458D08B8B038.html
+https://support.securly.com/hc/en-us/articles/206081828-How-do-I-manually-install-the-Securly-SSL-certificate-in-Chrome-
 ```
 
 ## [EXTRA] Creating a Self-Signed Certificate with CSR and Private key
+
+Create a Private key
 ```
-# Create a Private key
 openssl genrsa -out domain.key 2048
-
-# Create CSR
+```
+Create CSR
+```
 openssl req -nodes -key domain.key -new -out domain.csr
-
-The "challenge password" is basically a shared-secret nonce between you and the SSL certificate-issuer (aka Certification Authority, or CA), embedded in the CSR, which the issuer may use to authenticate you should that ever be needed.
-
-# We can also create both the private key and CSR with a single command:
-openssl req -newkey rsa:2048 -keyout domain.key -out domain.csr
-
-# If we want our private key unencrypted, we can add the -nodes option:
+```
+We can also create both the private key and CSR with a single command:
+```
 openssl req -newkey rsa:2048 -nodes -keyout domain.key -out domain.csr
-
-# Let's create a self-signed certificate (domain.crt) with our existing private key and CSR:
+```
+Let's create a self-signed certificate (domain.crt) with our existing private key and CSR
+```
 openssl x509 -signkey domain.key -in domain.csr -req -days 365 -out domain.crt
-
-# We can create a private key and a self-signed certificate with just a single command
+```
+We can also create a private key and a self-signed certificate with a single command
+```
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout domain.key -out domain.crt
+```
+
+## Links
+```
+https://certlogik.com/decoder/
+https://stackoverflow.com/questions/43665243/invalid-self-signed-ssl-cert-subject-alternative-name-missing
+https://stackoverflow.com/questions/6194236/openssl-certificate-version-3-with-subject-alternative-name
+https://serverfault.com/questions/845766/generating-a-self-signed-cert-with-openssl-that-works-in-chrome-58
+Free SSL Certs: https://www.cminds.com/blog/wordpress/5-best-free-ssl-certificates-secure-site/
 ```
