@@ -95,9 +95,9 @@ openssl x509 -req \
     -CAcreateserial -out domain.crt \
     -days 365 
 ```
-Decode Certificate and observe that SAN is missing from certificate while it is available in CSR.
+Decode Certificate and observe that SAN field is missing from certificate while it is available in CSR.
 The reason is that by default OpenSSL does not copy extensions from the request to the certificate.
-Normally, the certificate would be created/signed by a CA based on a request from a customer, and some extensions could grant the certificate more power than the CA was intending if they were to blindly trust the extensions defined in the request.
+We can fix this by providing the extensions file
 ```
 openssl x509 -in domain.crt -text -noout
 ```
