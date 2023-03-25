@@ -158,7 +158,7 @@ index  index.html;
 }
 }
 ```
-Configure Nginx with the certificate and key we created
+Copy certificate and key we created to the location where nginx use in it's `/etc/nginx/nginx.conf`
 ```
 mkdir -p /etc/pki/nginx/private
 cp domain.crt /etc/pki/nginx/server.crt
@@ -166,7 +166,7 @@ cp domain.key /etc/pki/nginx/private/server.key
 systemctl restart nginx
 ```
 
-## Adding CA in browser
+## Adding CA Cert in browser
 ```
 https://support.securly.com/hc/en-us/articles/206081828-How-do-I-manually-install-the-Securly-SSL-certificate-in-Chrome-
 ```
