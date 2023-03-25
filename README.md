@@ -119,8 +119,8 @@ IP.1 = 13.233.110.41
 
 EOF
 ```
+Generate SSL certificate With self signed CA
 ```
-# Generate SSL certificate With self signed CA
 openssl x509 -req \
     -in domain.csr \
     -CA rootCA.crt -CAkey rootCA.key \
