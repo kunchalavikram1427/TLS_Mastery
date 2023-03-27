@@ -133,6 +133,60 @@ Decode Certificate and observe that SAN is available in the certificate
 openssl x509 -in domain.crt -text -noout
 ```
 
+we can also include extensions directly in the `csr.conf`
+```
+cat > csr.conf <<EOF
+[ req ]
+default_bits = 2048
+prompt = no
+default_md = sha256
+req_extensions = req_ext
+distinguished_name = dn
+
+[ dn ]
+C = IN
+ST = Karnataka
+L = Bangalore
+O = DME
+OU = DevSecOps
+CN = mynginx.com
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = mynginx.com
+DNS.2 = test.mynginx.com
+DNS.3 = www.mynginx.com 
+IP.1 = 13.233.110.41
+
+[ v3_ext ]
+authorityKeyIdentifier=keyid,issuer:always
+basicConstraints=CA:FALSE
+keyUsage=keyEncipherment,dataEncipherment
+extendedKeyUsage=serverAuth,clientAuth
+subjectAltName=@alt_names
+
+EOF
+```
+Generate CSR
+```
+openssl req -new -key domain.key -out domain.csr -config csr.conf
+```
+Generate the server certificate using the ca.key, ca.crt and domain.csr
+```
+openssl x509 -req \
+       -in domain.csr \
+       -CA rootCA.crt -CAkey rootCA.key \
+       -CAcreateserial -out domain.crt \
+       -days 10000 \
+       -extensions v3_ext -extfile csr.conf
+```
+Decode Certificate and observe that SAN is available in the certificate
+```
+openssl x509 -in domain.crt -text -noout
+```
+
 ## Install and configure Nginx
 Install Nginx on AWS EC2 running Linux AMI
 ```
@@ -196,6 +250,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout domain.key -out doma
 
 ## Links
 ```
+https://kubernetes.io/docs/tasks/administer-cluster/certificates/#openssl
 https://certlogik.com/decoder/
 https://stackoverflow.com/questions/43665243/invalid-self-signed-ssl-cert-subject-alternative-name-missing
 https://stackoverflow.com/questions/6194236/openssl-certificate-version-3-with-subject-alternative-name
