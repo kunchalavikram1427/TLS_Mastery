@@ -217,6 +217,9 @@ Copy certificate and key we created to the location where nginx use in it's `/et
 mkdir -p /etc/pki/nginx/private
 cp domain.crt /etc/pki/nginx/server.crt
 cp domain.key /etc/pki/nginx/private/server.key
+```
+Restart Nginx
+```
 systemctl restart nginx
 ```
 
